@@ -1,0 +1,10 @@
+{
+  "displayName": "Kortix",
+  "description": "MCP server for Kortix, an open-source AI operating system for agents, skills, memory, and connectors.",
+  "url": "https://www.kortix.com/.well-known/ai-catalog.json",
+  "tags": [
+    "mcp",
+    "agents",
+    "open-source"
+  ]
+}

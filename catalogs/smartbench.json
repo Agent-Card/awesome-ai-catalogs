@@ -1,0 +1,11 @@
+{
+  "displayName": "SmartBench",
+  "description": "Federated ARD registry for discovering and comparing AI models, skills, MCP servers, and agents.",
+  "url": "https://smartbench.ai/.well-known/ai-catalog.json",
+  "tags": [
+    "registry",
+    "discovery",
+    "mcp",
+    "skills"
+  ]
+}

@@ -33,18 +33,24 @@ The site's HTML also advertises the catalog with `<link rel="ai-catalog">` for a
 
 - [AgentAvow](https://agentavow.com/.well-known/ai-catalog.json) - Signed (did:web, ES256) catalog for the AgentAvow trust MCP server; a reference for Trusted-level conformance.
 - [anchor-x402](https://api.anchor-x402.com/.well-known/ai-catalog.json) - x402-paid services for AI agents exposed as an A2A agent, an MCP server, and an OpenAPI description.
+- [AWS Skills](https://dawright22.github.io/aws_skills/.well-known/ai-catalog.json) - Community agent skills for AWS services such as API Gateway, Bedrock, CloudFormation, CloudWatch, and Cognito.
 - [Azure Git-Ape](https://azure.github.io/git-ape/.well-known/ai-catalog.json) - Agent skills for Azure deployments: cost estimation, preflight validation, drift detection, and integration testing.
 - [Clairvoyance](https://clairvoyance.fyi/.well-known/ai-catalog.json) - Software design skills for AI coding agents, inspired by A Philosophy of Software Design.
+- [Cloudflare Developer Documentation](https://developers.cloudflare.com/.well-known/ai-catalog.json) - Cloudflare API OpenAPI spec, MCP servers, agent skills index, and llms.txt for the Cloudflare developer platform.
 - [Datum](https://www.datum.net/.well-known/ai-catalog.json) - MCP server and OpenAPI description for Datum, connected infrastructure for AI companies.
 - [DBFlux](https://dbflux.dev/.well-known/ai-catalog.json) - Documentation, llms.txt, an agent skill, and a docs MCP server for DBFlux, a keyboard-first database client.
 - [DeepEval](https://deepeval.com/.well-known/ai-catalog.json) - LLM evaluation framework docs (llms.txt), the Confident AI API catalog, and the Confident AI MCP server.
 - [Frontman](https://frontman.sh/.well-known/ai-catalog.json) - Agent skills and a read-only OpenAPI for Frontman, a browser-aware frontend coding agent.
 - [iammatthias.com](https://iammatthias.com/.well-known/ai-catalog.json) - Personal site exposing llms.txt, an MCP server, and a GraphQL endpoint for searching and reading its content.
+- [Kortix](https://www.kortix.com/.well-known/ai-catalog.json) - MCP server for Kortix, an open-source AI operating system for agents, skills, memory, and connectors.
 - [Lumis](https://lumis.sh/.well-known/ai-catalog.json) - Docs MCP server and an agent skill for the Lumis syntax highlighter.
 - [Magoo](https://magoo.cc/.well-known/ai-catalog.json) - Read-only MCP access to Magoo, a library of component interaction-design behaviors for design systems (Portuguese).
 - [Nostria](https://nostria.app/.well-known/ai-catalog.json) - MCP server and OpenAPI descriptions for the Nostria Nostr client and its backend services.
+- [Nylas CLI](https://cli.nylas.com/.well-known/ai-catalog.json) - Hosted Nylas MCP servers (US and EU) for email, calendar, and contacts, plus the Nylas CLI llms.txt and API docs.
 - [Percona Community](https://percona.community/.well-known/ai-catalog.json) - Semantic search API, llms.txt, and agent instructions for the Percona open source database community site.
 - [rimzzlabs.com](https://rimzzlabs.com/.well-known/ai-catalog.json) - Personal site publishing a public OpenAPI, an API catalog linkset, and guestbook and notes agent skills.
+- [SmartBench](https://smartbench.ai/.well-known/ai-catalog.json) - Federated ARD registry for discovering and comparing AI models, skills, MCP servers, and agents.
+- [Suganthan Mohanadasan](https://suganthan.com/.well-known/ai-catalog.json) - A2A agent, MCP server, and OpenAPI for searching and reading an AI SEO research blog.
 - [The Website Specification](https://specification.website/.well-known/ai-catalog.json) - MCP server, A2A agent, agent skill, and knowledge bundle for querying The Website Specification.
 - [tldraw](https://tldraw.dev/.well-known/ai-catalog.json) - tldraw SDK migration skill plus a nested catalog for tldraw.com, including its MCP server for reading boards.
 - [Weaviate](https://weaviate.io/.well-known/ai-catalog.json) - Agent-oriented guides, llms.txt, and resources for the Weaviate open source vector database.

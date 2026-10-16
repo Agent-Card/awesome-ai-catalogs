@@ -1,0 +1,12 @@
+{
+  "displayName": "Suganthan Mohanadasan",
+  "description": "A2A agent, MCP server, and OpenAPI for searching and reading an AI SEO research blog.",
+  "url": "https://suganthan.com/.well-known/ai-catalog.json",
+  "tags": [
+    "a2a",
+    "mcp",
+    "openapi",
+    "seo",
+    "personal-site"
+  ]
+}

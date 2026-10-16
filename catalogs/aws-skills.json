@@ -1,0 +1,10 @@
+{
+  "displayName": "AWS Skills",
+  "description": "Community agent skills for AWS services such as API Gateway, Bedrock, CloudFormation, CloudWatch, and Cognito.",
+  "url": "https://dawright22.github.io/aws_skills/.well-known/ai-catalog.json",
+  "tags": [
+    "aws",
+    "skills",
+    "cloud"
+  ]
+}

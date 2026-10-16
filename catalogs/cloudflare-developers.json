@@ -1,0 +1,12 @@
+{
+  "displayName": "Cloudflare Developer Documentation",
+  "description": "Cloudflare API OpenAPI spec, MCP servers, agent skills index, and llms.txt for the Cloudflare developer platform.",
+  "url": "https://developers.cloudflare.com/.well-known/ai-catalog.json",
+  "tags": [
+    "mcp",
+    "openapi",
+    "skills",
+    "cloud",
+    "documentation"
+  ]
+}
