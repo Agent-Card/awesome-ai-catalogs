@@ -1,0 +1,10 @@
+{
+  "displayName": "Clairvoyance",
+  "description": "Software design skills for AI coding agents, inspired by A Philosophy of Software Design.",
+  "url": "https://clairvoyance.fyi/.well-known/ai-catalog.json",
+  "tags": [
+    "mcp",
+    "software-design",
+    "coding"
+  ]
+}

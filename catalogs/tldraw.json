@@ -1,0 +1,11 @@
+{
+  "displayName": "tldraw",
+  "description": "tldraw SDK migration skill plus a nested catalog for tldraw.com, including its MCP server for reading boards.",
+  "url": "https://tldraw.dev/.well-known/ai-catalog.json",
+  "tags": [
+    "mcp",
+    "skills",
+    "whiteboard",
+    "nested-catalog"
+  ]
+}

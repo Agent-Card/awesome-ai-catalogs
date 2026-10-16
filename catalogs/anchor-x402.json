@@ -1,0 +1,12 @@
+{
+  "displayName": "anchor-x402",
+  "description": "x402-paid services for AI agents exposed as an A2A agent, an MCP server, and an OpenAPI description.",
+  "url": "https://api.anchor-x402.com/.well-known/ai-catalog.json",
+  "tags": [
+    "a2a",
+    "mcp",
+    "openapi",
+    "payments",
+    "x402"
+  ]
+}

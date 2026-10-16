@@ -1,0 +1,11 @@
+{
+  "displayName": "Datum",
+  "description": "MCP server and OpenAPI description for Datum, connected infrastructure for AI companies.",
+  "url": "https://www.datum.net/.well-known/ai-catalog.json",
+  "tags": [
+    "mcp",
+    "openapi",
+    "cloud",
+    "infrastructure"
+  ]
+}

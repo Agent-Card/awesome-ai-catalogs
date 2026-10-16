@@ -1,0 +1,11 @@
+{
+  "displayName": "DBFlux",
+  "description": "Documentation, llms.txt, an agent skill, and a docs MCP server for DBFlux, a keyboard-first database client.",
+  "url": "https://dbflux.dev/.well-known/ai-catalog.json",
+  "tags": [
+    "mcp",
+    "skills",
+    "databases",
+    "documentation"
+  ]
+}

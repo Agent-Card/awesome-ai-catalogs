@@ -1,0 +1,10 @@
+{
+  "displayName": "Weaviate",
+  "description": "Agent-oriented guides, llms.txt, and resources for the Weaviate open source vector database.",
+  "url": "https://weaviate.io/.well-known/ai-catalog.json",
+  "tags": [
+    "vector-database",
+    "documentation",
+    "skills"
+  ]
+}

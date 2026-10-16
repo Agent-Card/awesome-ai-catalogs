@@ -1,0 +1,10 @@
+{
+  "displayName": "iammatthias.com",
+  "description": "Personal site exposing llms.txt, an MCP server, and a GraphQL endpoint for searching and reading its content.",
+  "url": "https://iammatthias.com/.well-known/ai-catalog.json",
+  "tags": [
+    "mcp",
+    "graphql",
+    "personal-site"
+  ]
+}

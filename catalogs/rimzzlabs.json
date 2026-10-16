@@ -1,0 +1,10 @@
+{
+  "displayName": "rimzzlabs.com",
+  "description": "Personal site publishing a public OpenAPI, an API catalog linkset, and guestbook and notes agent skills.",
+  "url": "https://rimzzlabs.com/.well-known/ai-catalog.json",
+  "tags": [
+    "openapi",
+    "skills",
+    "personal-site"
+  ]
+}

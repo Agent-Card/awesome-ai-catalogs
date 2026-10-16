@@ -1,0 +1,11 @@
+{
+  "displayName": "Azure Git-Ape",
+  "description": "Agent skills for Azure deployments: cost estimation, preflight validation, drift detection, and integration testing.",
+  "url": "https://azure.github.io/git-ape/.well-known/ai-catalog.json",
+  "tags": [
+    "azure",
+    "skills",
+    "devops",
+    "cloud"
+  ]
+}

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Awesome AI Catalogs</title>
+    <meta name="description" content="A curated AI Catalog of publicly available AI Catalogs: MCP servers, A2A agents, agent skills, and more.">
+    <link rel="ai-catalog" href=".well-known/ai-catalog.json" type="application/ai-catalog+json">
+    <link rel="alternate" href=".well-known/ai-catalog.json" type="application/ai-catalog+json" title="Awesome AI Catalogs (AI Catalog)">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header>
+      <h1>Awesome AI Catalogs</h1>
+      <p>A curated list of {{COUNT}} publicly available <a href="https://agent-card.github.io/ai-catalog/">AI Catalogs</a>.
+        Every catalog is validated with the <a href="https://github.com/Agent-Card/ai-catalog-cli"><code>ai-catalog</code> CLI</a> before it is listed.</p>
+      <p class="links">
+        <a class="button" href=".well-known/ai-catalog.json">/.well-known/ai-catalog.json</a>
+        <a class="button secondary" href="{{REPO_URL}}/blob/main/CONTRIBUTING.md">Add your catalog</a>
+        <a class="button secondary" href="{{REPO_URL}}">GitHub</a>
+      </p>
+      <pre><code>ai-catalog catalog add awesome {{SITE_URL}}/.well-known/ai-catalog.json</code></pre>
+      <label class="search">
+        <span class="visually-hidden">Filter catalogs</span>
+        <input id="filter" type="search" placeholder="Filter by name, tag, domain, or entry type (e.g. mcp)" autocomplete="off">
+      </label>
+    </header>
+    <main id="catalogs">
+{{CARDS}}
+    </main>
+    <p id="empty" hidden>No catalogs match your filter.</p>
+    <footer>
+      <p>This page is itself an AI Catalog. It is published as <code>application/ai-catalog+json</code> content at
+        <a href=".well-known/ai-catalog.json"><code>.well-known/ai-catalog.json</code></a> and
+        <a href="ai-catalog.json"><code>ai-catalog.json</code></a>.</p>
+      <p>Listings are provided by their publishers and are not endorsed by the AI Catalog Working Group.</p>
+    </footer>
+    <script>
+      const input = document.getElementById("filter");
+      const cards = [...document.querySelectorAll(".card")];
+      const empty = document.getElementById("empty");
+      input.addEventListener("input", () => {
+        const terms = input.value.toLowerCase().split(/\s+/).filter(Boolean);
+        let shown = 0;
+        for (const card of cards) {
+          const match = terms.every((t) => card.dataset.search.includes(t));
+          card.hidden = !match;
+          if (match) shown++;
+        }
+        empty.hidden = shown !== 0;
+      });
+    </script>
+  </body>
+</html>
