@@ -1,0 +1,31 @@
+name: Set up ai-catalog CLI
+description: Installs a pinned, checksum-verified release of the Agent-Card ai-catalog CLI (Linux x64).
+
+inputs:
+  version:
+    description: ai-catalog-cli release tag
+    default: v0.2.2
+  sha256:
+    description: Expected SHA-256 of ai-catalog-linux-amd64-musl.tar.gz for the release above
+    default: 9b789d978a5e9456e91a49365e3a232b4642a72621853e8781706ecc47ee7919
+
+runs:
+  using: composite
+  steps:
+    - name: Install ai-catalog ${{ inputs.version }}
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+        EXPECTED_SHA256: ${{ inputs.sha256 }}
+      run: |
+        set -euo pipefail
+        name=ai-catalog-linux-amd64-musl
+        dir="$RUNNER_TEMP/ai-catalog"
+        mkdir -p "$dir"
+        curl -fsSL --retry 3 -o "$dir/$name.tar.gz" \
+          "https://github.com/Agent-Card/ai-catalog-cli/releases/download/$VERSION/$name.tar.gz"
+        echo "$EXPECTED_SHA256  $dir/$name.tar.gz" | sha256sum -c -
+        tar -xzf "$dir/$name.tar.gz" -C "$dir" ai-catalog
+        chmod +x "$dir/ai-catalog"
+        echo "$dir" >> "$GITHUB_PATH"
+        "$dir/ai-catalog" version

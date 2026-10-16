@@ -1,0 +1,46 @@
+name: Lint AI Catalogs
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint ai-catalog.json and validate catalogs
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - uses: ./.github/actions/setup-ai-catalog
+
+      # On pull requests only the added or changed catalogs are fetched, so an
+      # outage at an unrelated publisher never blocks a contribution.
+      - name: Validate changed catalogs
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: python scripts/catalogs.py check --remote changed --base "$BASE_SHA"
+
+      - name: Validate all catalogs
+        if: github.event_name != 'pull_request'
+        run: python scripts/catalogs.py check --remote all
+
+      - name: Build site and validate aggregate catalog
+        run: python scripts/catalogs.py build --no-fetch --out _site

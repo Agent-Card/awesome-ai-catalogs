@@ -1,0 +1,316 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Awesome AI Catalogs",
+    "identifier": "https://agent-card.github.io/awesome-ai-catalogs/",
+    "documentationUrl": "https://github.com/Agent-Card/awesome-ai-catalogs"
+  },
+  "entries": [
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/agentavow",
+      "displayName": "AgentAvow",
+      "type": "application/ai-catalog+json",
+      "description": "Signed (did:web, ES256) catalog for the AgentAvow trust MCP server; a reference for Trusted-level conformance.",
+      "url": "https://agentavow.com/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "trust",
+        "signed"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/anchor-x402",
+      "displayName": "anchor-x402",
+      "type": "application/ai-catalog+json",
+      "description": "x402-paid services for AI agents exposed as an A2A agent, an MCP server, and an OpenAPI description.",
+      "url": "https://api.anchor-x402.com/.well-known/ai-catalog.json",
+      "tags": [
+        "a2a",
+        "mcp",
+        "openapi",
+        "payments",
+        "x402"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/aws-skills",
+      "displayName": "AWS Skills",
+      "type": "application/ai-catalog+json",
+      "description": "Community agent skills for AWS services such as API Gateway, Bedrock, CloudFormation, CloudWatch, and Cognito.",
+      "url": "https://dawright22.github.io/aws_skills/.well-known/ai-catalog.json",
+      "tags": [
+        "aws",
+        "skills",
+        "cloud"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/azure-git-ape",
+      "displayName": "Azure Git-Ape",
+      "type": "application/ai-catalog+json",
+      "description": "Agent skills for Azure deployments: cost estimation, preflight validation, drift detection, and integration testing.",
+      "url": "https://azure.github.io/git-ape/.well-known/ai-catalog.json",
+      "tags": [
+        "azure",
+        "skills",
+        "devops",
+        "cloud"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/clairvoyance",
+      "displayName": "Clairvoyance",
+      "type": "application/ai-catalog+json",
+      "description": "Software design skills for AI coding agents, inspired by A Philosophy of Software Design.",
+      "url": "https://clairvoyance.fyi/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "software-design",
+        "coding"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/cloudflare-developers",
+      "displayName": "Cloudflare Developer Documentation",
+      "type": "application/ai-catalog+json",
+      "description": "Cloudflare API OpenAPI spec, MCP servers, agent skills index, and llms.txt for the Cloudflare developer platform.",
+      "url": "https://developers.cloudflare.com/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "openapi",
+        "skills",
+        "cloud",
+        "documentation"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/datum",
+      "displayName": "Datum",
+      "type": "application/ai-catalog+json",
+      "description": "MCP server and OpenAPI description for Datum, connected infrastructure for AI companies.",
+      "url": "https://www.datum.net/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "openapi",
+        "cloud",
+        "infrastructure"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/dbflux",
+      "displayName": "DBFlux",
+      "type": "application/ai-catalog+json",
+      "description": "Documentation, llms.txt, an agent skill, and a docs MCP server for DBFlux, a keyboard-first database client.",
+      "url": "https://dbflux.dev/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "skills",
+        "databases",
+        "documentation"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/deepeval",
+      "displayName": "DeepEval",
+      "type": "application/ai-catalog+json",
+      "description": "LLM evaluation framework docs (llms.txt), the Confident AI API catalog, and the Confident AI MCP server.",
+      "url": "https://deepeval.com/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "llm-evaluation",
+        "testing",
+        "documentation"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/frontman",
+      "displayName": "Frontman",
+      "type": "application/ai-catalog+json",
+      "description": "Agent skills and a read-only OpenAPI for Frontman, a browser-aware frontend coding agent.",
+      "url": "https://frontman.sh/.well-known/ai-catalog.json",
+      "tags": [
+        "skills",
+        "openapi",
+        "frontend",
+        "coding"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/iammatthias",
+      "displayName": "iammatthias.com",
+      "type": "application/ai-catalog+json",
+      "description": "Personal site exposing llms.txt, an MCP server, and a GraphQL endpoint for searching and reading its content.",
+      "url": "https://iammatthias.com/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "graphql",
+        "personal-site"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/kortix",
+      "displayName": "Kortix",
+      "type": "application/ai-catalog+json",
+      "description": "MCP server for Kortix, an open-source AI operating system for agents, skills, memory, and connectors.",
+      "url": "https://www.kortix.com/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "agents",
+        "open-source"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/lumis",
+      "displayName": "Lumis",
+      "type": "application/ai-catalog+json",
+      "description": "Docs MCP server and an agent skill for the Lumis syntax highlighter.",
+      "url": "https://lumis.sh/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "skills",
+        "documentation"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/magoo",
+      "displayName": "Magoo",
+      "type": "application/ai-catalog+json",
+      "description": "Read-only MCP access to Magoo, a library of component interaction-design behaviors for design systems (Portuguese).",
+      "url": "https://magoo.cc/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "design-systems",
+        "interaction-design"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/nostria",
+      "displayName": "Nostria",
+      "type": "application/ai-catalog+json",
+      "description": "MCP server and OpenAPI descriptions for the Nostria Nostr client and its backend services.",
+      "url": "https://nostria.app/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "openapi",
+        "nostr",
+        "social"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/nylas-cli",
+      "displayName": "Nylas CLI",
+      "type": "application/ai-catalog+json",
+      "description": "Hosted Nylas MCP servers (US and EU) for email, calendar, and contacts, plus the Nylas CLI llms.txt and API docs.",
+      "url": "https://cli.nylas.com/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "email",
+        "calendar",
+        "contacts"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/percona-community",
+      "displayName": "Percona Community",
+      "type": "application/ai-catalog+json",
+      "description": "Semantic search API, llms.txt, and agent instructions for the Percona open source database community site.",
+      "url": "https://percona.community/.well-known/ai-catalog.json",
+      "tags": [
+        "openapi",
+        "databases",
+        "search",
+        "community"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/rimzzlabs",
+      "displayName": "rimzzlabs.com",
+      "type": "application/ai-catalog+json",
+      "description": "Personal site publishing a public OpenAPI, an API catalog linkset, and guestbook and notes agent skills.",
+      "url": "https://rimzzlabs.com/.well-known/ai-catalog.json",
+      "tags": [
+        "openapi",
+        "skills",
+        "personal-site"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/smartbench",
+      "displayName": "SmartBench",
+      "type": "application/ai-catalog+json",
+      "description": "Federated ARD registry for discovering and comparing AI models, skills, MCP servers, and agents.",
+      "url": "https://smartbench.ai/.well-known/ai-catalog.json",
+      "tags": [
+        "registry",
+        "discovery",
+        "mcp",
+        "skills"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/suganthan",
+      "displayName": "Suganthan Mohanadasan",
+      "type": "application/ai-catalog+json",
+      "description": "A2A agent, MCP server, and OpenAPI for searching and reading an AI SEO research blog.",
+      "url": "https://suganthan.com/.well-known/ai-catalog.json",
+      "tags": [
+        "a2a",
+        "mcp",
+        "openapi",
+        "seo",
+        "personal-site"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/specification-website",
+      "displayName": "The Website Specification",
+      "type": "application/ai-catalog+json",
+      "description": "MCP server, A2A agent, agent skill, and knowledge bundle for querying The Website Specification.",
+      "url": "https://specification.website/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "a2a",
+        "skills",
+        "web-standards"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/tldraw",
+      "displayName": "tldraw",
+      "type": "application/ai-catalog+json",
+      "description": "tldraw SDK migration skill plus a nested catalog for tldraw.com, including its MCP server for reading boards.",
+      "url": "https://tldraw.dev/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "skills",
+        "whiteboard",
+        "nested-catalog"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/weaviate",
+      "displayName": "Weaviate",
+      "type": "application/ai-catalog+json",
+      "description": "Agent-oriented guides, llms.txt, and resources for the Weaviate open source vector database.",
+      "url": "https://weaviate.io/.well-known/ai-catalog.json",
+      "tags": [
+        "vector-database",
+        "documentation",
+        "skills"
+      ]
+    },
+    {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/x-md",
+      "displayName": "x.md",
+      "type": "application/ai-catalog+json",
+      "description": "MCP server, REST API, and browse-x agent skill for reading public X (Twitter) content.",
+      "url": "https://x.pcstyle.dev/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "openapi",
+        "skills",
+        "social"
+      ]
+    }
+  ]
+}
