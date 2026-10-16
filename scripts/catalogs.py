@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """Lint, build, and publish the Awesome AI Catalogs list.
 
-Every listed catalog lives in ``catalogs/<slug>.json``. This script:
+The list is ``ai-catalog.json`` at the repository root: an AI Catalog whose
+entries are the listed catalogs (``application/ai-catalog+json``). This script:
 
-* ``check``  - lints the listing files and (optionally) fetches each remote
-               catalog and validates it with the ``ai-catalog`` CLI.
-* ``build``  - produces the GitHub Pages site, including the aggregate
-               AI Catalog served at ``/.well-known/ai-catalog.json``.
+* ``check``  - validates ``ai-catalog.json`` with the ``ai-catalog`` CLI, applies
+               this list's own rules, and fetches and validates listed catalogs.
+* ``format`` - rewrites ``ai-catalog.json`` in canonical formatting.
+* ``build``  - produces the GitHub Pages site, publishing ``ai-catalog.json``
+               unchanged at ``/.well-known/ai-catalog.json``.
 * ``readme`` - regenerates the catalog list in README.md.
 
 Only the Python standard library is used. The ``ai-catalog`` CLI
 (https://github.com/Agent-Card/ai-catalog-cli) must be on PATH (or set
-``AI_CATALOG_BIN``) for remote validation and for building the site.
+``AI_CATALOG_BIN``) for ``check`` and ``build``.
 """
 
 from __future__ import annotations
@@ -32,15 +34,16 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-CATALOGS_DIR = ROOT / "catalogs"
+CATALOG = ROOT / "ai-catalog.json"
+CATALOG_REL = "ai-catalog.json"
 SITE_SRC = ROOT / "site"
 README = ROOT / "README.md"
 
-SITE_URL = os.environ.get("SITE_URL", "https://agent-card.github.io/awesome-ai-catalogs").rstrip("/")
+SITE_URL = "https://agent-card.github.io/awesome-ai-catalogs"
 REPO_URL = "https://github.com/Agent-Card/awesome-ai-catalogs"
 # Identifiers assigned by this list are non-urn:air URIs under our control,
 # as required by the spec's Catalog Projection rules for non-publishers.
-ID_BASE = "https://agent-card.github.io/awesome-ai-catalogs/catalogs/"
+ID_BASE = SITE_URL + "/catalogs/"
 
 CATALOG_TYPE = "application/ai-catalog+json"
 USER_AGENT = "awesome-ai-catalogs-linter (+https://github.com/Agent-Card/awesome-ai-catalogs)"
@@ -51,8 +54,9 @@ SLUG_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
 TAG_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$")
 URN_AIR_RE = re.compile(r"^urn:air:([a-z0-9.-]+):([a-z0-9-]+(?::[a-z0-9-]+)*):([A-Za-z0-9._~-]+)$")
 
-ALLOWED_KEYS = {"identifier", "type", "displayName", "description", "url", "tags", "publisher"}
-REQUIRED_KEYS = {"displayName", "description", "url"}
+TOP_LEVEL_KEYS = {"specVersion", "host", "entries"}
+ENTRY_KEYS = ["identifier", "displayName", "type", "description", "url", "tags", "publisher"]
+REQUIRED_ENTRY_KEYS = {"identifier", "displayName", "type", "description", "url"}
 MAX_NAME = 80
 MAX_DESCRIPTION = 300
 MAX_TAGS = 8
@@ -66,83 +70,110 @@ def gh_actions() -> bool:
 
 
 @dataclass
-class Listing:
-    slug: str
-    path: Path
+class Entry:
+    index: int
     data: dict
+    line: int | None = None
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     remote: dict | None = None
 
     @property
     def identifier(self) -> str:
-        return self.data.get("identifier") or ID_BASE + self.slug
+        value = self.data.get("identifier")
+        return value if isinstance(value, str) else f"entries[{self.index}]"
+
+    @property
+    def label(self) -> str:
+        name = self.data.get("displayName")
+        return f"{name} ({self.identifier})" if isinstance(name, str) else self.identifier
 
     @property
     def sort_key(self) -> str:
-        return str(self.data.get("displayName", self.slug)).lower()
+        return str(self.data.get("displayName", "")).casefold()
 
-    def entry(self) -> dict:
-        """Return the Catalog Entry for the aggregate catalog."""
-        entry = {
-            "identifier": self.identifier,
-            "displayName": self.data["displayName"],
-            "type": CATALOG_TYPE,
-            "description": self.data["description"],
-            "url": self.data["url"],
-        }
-        if self.data.get("tags"):
-            entry["tags"] = list(self.data["tags"])
-        if self.data.get("publisher"):
-            entry["publisher"] = self.data["publisher"]
-        return entry
+
+@dataclass
+class Result:
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    entries: list[Entry] = field(default_factory=list)
 
 
 # --------------------------------------------------------------------------
-# Loading and linting
+# Helpers
 # --------------------------------------------------------------------------
 
 
-def load_listings() -> list[Listing]:
-    listings = []
-    for path in sorted(CATALOGS_DIR.iterdir()):
-        if path.name.startswith(".") or path.is_dir():
-            continue
-        listing = Listing(slug=path.stem, path=path, data={})
-        listings.append(listing)
-        if path.suffix != ".json":
-            listing.errors.append("listing files must use the .json extension")
-            continue
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-            listing.errors.append(f"not valid UTF-8 JSON: {exc}")
-            continue
-        if isinstance(data, dict):
-            listing.data = data
-        else:
-            listing.errors.append("listing must be a JSON object")
-    return listings
+def canonical(document: dict) -> str:
+    return json.dumps(document, indent=2, ensure_ascii=False) + "\n"
+
+
+def load_catalog(text: str) -> dict:
+    document = json.loads(text)
+    if not isinstance(document, dict):
+        raise ValueError("ai-catalog.json must be a JSON object")
+    return document
+
+
+def identifier_lines(text: str) -> dict[str, int]:
+    lines: dict[str, int] = {}
+    for number, line in enumerate(text.splitlines(), start=1):
+        match = re.match(r'\s*"identifier":\s*"((?:[^"\\]|\\.)*)"', line)
+        if match:
+            lines.setdefault(json.loads(f'"{match.group(1)}"'), number)
+    return lines
+
+
+def find_cli() -> str:
+    cli = os.environ.get("AI_CATALOG_BIN") or shutil.which("ai-catalog")
+    if not cli:
+        raise SystemExit(
+            "The ai-catalog CLI was not found. Install it from "
+            "https://github.com/Agent-Card/ai-catalog-cli/releases or set AI_CATALOG_BIN."
+        )
+    return cli
+
+
+def run_validator(cli: str, path: Path) -> dict:
+    proc = subprocess.run(
+        [cli, "validate", "--json", str(path)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=120,
+    )
+    try:
+        return json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        message = (proc.stderr or proc.stdout).strip() or f"ai-catalog exited with code {proc.returncode}"
+        return {"valid": False, "errors": [{"path": "", "message": message}], "warnings": []}
 
 
 def host_matches(publisher: str, host: str) -> bool:
     return host == publisher or host.endswith("." + publisher)
 
 
-def lint_listing(listing: Listing) -> None:
-    data, err = listing.data, listing.errors.append
-    if listing.errors:
+# --------------------------------------------------------------------------
+# List rules (on top of the AI Catalog specification)
+# --------------------------------------------------------------------------
+
+
+def lint_entry(entry: Entry) -> None:
+    data, err = entry.data, entry.errors.append
+    if not isinstance(data, dict):
+        err("entry must be a JSON object")
         return
 
-    if not SLUG_RE.match(listing.slug):
-        err("file name must be a lowercase slug (a-z, 0-9, '-') followed by .json")
-
-    unknown = set(data) - ALLOWED_KEYS
+    unknown = set(data) - set(ENTRY_KEYS)
     if unknown:
-        err(f"unknown member(s): {', '.join(sorted(unknown))} (allowed: {', '.join(sorted(ALLOWED_KEYS))})")
-    missing = REQUIRED_KEYS - set(data)
+        err(f"unknown member(s): {', '.join(sorted(unknown))} (allowed: {', '.join(ENTRY_KEYS)})")
+    missing = REQUIRED_ENTRY_KEYS - set(data)
     if missing:
         err(f"missing required member(s): {', '.join(sorted(missing))}")
+
+    if "type" in data and data["type"] != CATALOG_TYPE:
+        err(f"type must be {CATALOG_TYPE!r}; this list only contains catalogs")
 
     for key, limit in (("displayName", MAX_NAME), ("description", MAX_DESCRIPTION)):
         if key not in data:
@@ -166,9 +197,6 @@ def lint_listing(listing: Listing) -> None:
         else:
             host = parsed.hostname.lower()
 
-    if "type" in data and data["type"] != CATALOG_TYPE:
-        err(f"type must be {CATALOG_TYPE!r} (or omitted)")
-
     if "identifier" in data:
         ident = data["identifier"]
         if not isinstance(ident, str) or not ident:
@@ -180,10 +208,10 @@ def lint_listing(listing: Listing) -> None:
             elif host and not host_matches(match.group(1), host):
                 err(
                     f"urn:air publisher '{match.group(1)}' must be the catalog's own domain ('{host}'); "
-                    "omit identifier if you are not the publisher"
+                    f"if you are not the publisher use {ID_BASE}<slug>"
                 )
-        elif ident != ID_BASE + listing.slug:
-            err(f"identifier must be a urn:air identifier you own, or omitted (defaults to {ID_BASE}{listing.slug})")
+        elif not (ident.startswith(ID_BASE) and SLUG_RE.match(ident[len(ID_BASE):])):
+            err(f"identifier must be {ID_BASE}<slug> (lowercase, hyphenated) or a urn:air identifier you own")
 
     if "tags" in data:
         tags = data["tags"]
@@ -210,56 +238,58 @@ def lint_listing(listing: Listing) -> None:
             err("publisher may only contain identifier and displayName")
 
 
-def lint_all(listings: list[Listing]) -> None:
-    for listing in listings:
-        lint_listing(listing)
+def lint_catalog(text: str, cli: str) -> Result:
+    result = Result()
+    try:
+        document = load_catalog(text)
+    except (json.JSONDecodeError, ValueError) as exc:
+        result.errors.append(f"not valid JSON: {exc}")
+        return result
+
+    report = run_validator(cli, CATALOG)
+    for item in report.get("errors", []):
+        result.errors.append(f"ai-catalog validate: {item.get('path') or '$'}: {item.get('message')}")
+    for item in report.get("warnings", []):
+        result.warnings.append(f"ai-catalog validate: {item.get('message') if isinstance(item, dict) else item}")
+
+    unknown = set(document) - TOP_LEVEL_KEYS
+    if unknown:
+        result.errors.append(f"unsupported top-level member(s): {', '.join(sorted(unknown))}")
+    if text != canonical(document):
+        result.errors.append("file is not canonically formatted; run: python scripts/catalogs.py format")
+
+    entries = document.get("entries")
+    if not isinstance(entries, list):
+        return result
+    lines = identifier_lines(text)
+    result.entries = [Entry(index=i, data=e) for i, e in enumerate(entries)]
     seen_urls: dict[str, str] = {}
     seen_ids: dict[str, str] = {}
-    for listing in listings:
-        if listing.errors:
+    for entry in result.entries:
+        lint_entry(entry)
+        entry.line = lines.get(entry.identifier)
+        if not isinstance(entry.data, dict):
             continue
-        url = listing.data["url"].rstrip("/").lower()
-        ident = listing.identifier
-        if url in seen_urls:
-            listing.errors.append(f"url is already listed in catalogs/{seen_urls[url]}.json")
-        if ident in seen_ids:
-            listing.errors.append(f"identifier is already used by catalogs/{seen_ids[ident]}.json")
-        seen_urls.setdefault(url, listing.slug)
-        seen_ids.setdefault(ident, listing.slug)
+        url, ident = entry.data.get("url"), entry.data.get("identifier")
+        if isinstance(url, str):
+            key = url.rstrip("/").lower()
+            if key in seen_urls:
+                entry.errors.append(f"url is already listed by {seen_urls[key]}")
+            seen_urls.setdefault(key, entry.identifier)
+        if isinstance(ident, str):
+            if ident in seen_ids:
+                entry.errors.append("identifier is already used by another entry")
+            seen_ids.setdefault(ident, ident)
+
+    names = [e.sort_key for e in result.entries]
+    if names != sorted(names):
+        result.errors.append("entries must be sorted alphabetically by displayName (case-insensitive)")
+    return result
 
 
 # --------------------------------------------------------------------------
 # Remote validation
 # --------------------------------------------------------------------------
-
-
-def find_cli() -> str | None:
-    return os.environ.get("AI_CATALOG_BIN") or shutil.which("ai-catalog")
-
-
-def require_cli() -> str:
-    cli = find_cli()
-    if not cli:
-        raise SystemExit(
-            "The ai-catalog CLI was not found. Install it from "
-            "https://github.com/Agent-Card/ai-catalog-cli/releases or set AI_CATALOG_BIN."
-        )
-    return cli
-
-
-def run_validator(cli: str, path: Path) -> dict:
-    proc = subprocess.run(
-        [cli, "validate", "--json", str(path)],
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        timeout=120,
-    )
-    try:
-        return json.loads(proc.stdout)
-    except json.JSONDecodeError:
-        message = (proc.stderr or proc.stdout).strip() or f"ai-catalog exited with code {proc.returncode}"
-        return {"valid": False, "errors": [{"path": "", "message": message}], "warnings": []}
 
 
 def fetch(url: str) -> tuple[bytes, str]:
@@ -273,28 +303,28 @@ def fetch(url: str) -> tuple[bytes, str]:
         return body, response.headers.get("Content-Type", "")
 
 
-def validate_remote(listing: Listing, cli: str) -> None:
-    url = listing.data["url"]
+def validate_remote(entry: Entry, cli: str) -> None:
+    url = entry.data["url"]
     result: dict = {"reachable": False, "valid": False}
-    listing.remote = result
+    entry.remote = result
     try:
         body, content_type = fetch(url)
     except urllib.error.HTTPError as exc:
-        listing.errors.append(f"fetching {url} failed: HTTP {exc.code}")
+        entry.errors.append(f"fetching {url} failed: HTTP {exc.code}")
         return
     except Exception as exc:  # noqa: BLE001 - surface any network failure to the contributor
-        listing.errors.append(f"fetching {url} failed: {exc}")
+        entry.errors.append(f"fetching {url} failed: {exc}")
         return
     result["reachable"] = True
 
     media_type = content_type.split(";")[0].strip().lower()
     if media_type and media_type != "application/json" and not media_type.endswith("+json"):
-        listing.warnings.append(f"served as '{media_type}'; '{CATALOG_TYPE}' or 'application/json' is expected")
+        entry.warnings.append(f"served as '{media_type}'; '{CATALOG_TYPE}' or 'application/json' is expected")
 
     try:
         document = json.loads(body.decode("utf-8-sig"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        listing.errors.append(f"{url} did not return JSON: {exc}")
+        entry.errors.append(f"{url} did not return JSON: {exc}")
         return
 
     fd, name = tempfile.mkstemp(suffix=".json")
@@ -309,28 +339,33 @@ def validate_remote(listing: Listing, cli: str) -> None:
     result["valid"] = bool(report.get("valid"))
     result["conformanceLevel"] = report.get("conformanceLevel")
     for item in report.get("errors", []):
-        listing.errors.append(f"ai-catalog validate: {item.get('path') or '$'}: {item.get('message')}")
+        entry.errors.append(f"{url}: ai-catalog validate: {item.get('path') or '$'}: {item.get('message')}")
     for item in report.get("warnings", []):
         message = item.get("message") if isinstance(item, dict) else str(item)
-        listing.warnings.append(f"ai-catalog validate: {message}")
+        entry.warnings.append(f"{url}: ai-catalog validate: {message}")
 
     entries = document.get("entries") if isinstance(document, dict) else None
     if isinstance(entries, list):
         result["entryCount"] = len(entries)
         result["types"] = sorted({e["type"] for e in entries if isinstance(e, dict) and isinstance(e.get("type"), str)})
         if not entries:
-            listing.errors.append("catalog has no entries; only non-empty catalogs can be listed")
+            entry.errors.append(f"{url} has no entries; only non-empty catalogs can be listed")
 
 
-def changed_listing_slugs(base: str) -> set[str]:
+def changed_identifiers(entries: list[Entry], base: str) -> set[str]:
+    """Identifiers of entries that are new or differ from the base revision."""
     proc = subprocess.run(
-        ["git", "diff", "--name-only", "--diff-filter=ACMR", f"{base}...HEAD", "--", "catalogs/"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=True,
+        ["git", "show", f"{base}:{CATALOG_REL}"], cwd=ROOT, capture_output=True, text=True, encoding="utf-8"
     )
-    return {Path(line).stem for line in proc.stdout.splitlines() if line.strip()}
+    previous: dict[str, dict] = {}
+    if proc.returncode == 0:
+        try:
+            for item in load_catalog(proc.stdout).get("entries") or []:
+                if isinstance(item, dict) and isinstance(item.get("identifier"), str):
+                    previous[item["identifier"]] = item
+        except (json.JSONDecodeError, ValueError):
+            pass
+    return {e.identifier for e in entries if previous.get(e.identifier) != e.data}
 
 
 # --------------------------------------------------------------------------
@@ -342,37 +377,47 @@ def md_cell(text: str) -> str:
     return text.replace("|", "\\|").replace("\n", " ")
 
 
-def report(listings: list[Listing], remote_slugs: set[str]) -> bool:
-    ok = True
-    rows = [
-        "## AI Catalog lint results",
-        "",
-        "| Catalog | Remote validation | Conformance | Entries | Result |",
-        "|---|---|---|---|---|",
-    ]
-    for listing in listings:
-        rel = listing.path.relative_to(ROOT).as_posix()
-        for message in listing.errors:
+def annotate(level: str, message: str, line: int | None) -> None:
+    if gh_actions():
+        location = f"file={CATALOG_REL}" + (f",line={line}" if line else "")
+        print(f"::{level} {location}::{message}")
+    else:
+        print(f"{level.upper():7} {CATALOG_REL}{f':{line}' if line else ''}: {message}")
+
+
+def report(result: Result, remote_ids: set[str]) -> bool:
+    ok = not result.errors
+    for message in result.errors:
+        annotate("error", message, None)
+    for message in result.warnings:
+        annotate("warning", message, None)
+    rows = []
+    for entry in result.entries:
+        for message in entry.errors:
             ok = False
-            print(f"::error file={rel}::{message}" if gh_actions() else f"ERROR   {rel}: {message}")
-        for message in listing.warnings:
-            print(f"::warning file={rel}::{message}" if gh_actions() else f"WARNING {rel}: {message}")
-        if listing.slug not in remote_slugs and not listing.errors:
-            continue
-        remote = listing.remote or {}
-        result = "❌ " + "<br>".join(md_cell(e) for e in listing.errors) if listing.errors else "✅"
-        rows.append(
-            f"| {md_cell(str(listing.data.get('displayName', listing.slug)))} (`{rel}`) "
-            f"| {'yes' if listing.slug in remote_slugs else 'skipped'} "
-            f"| {remote.get('conformanceLevel') or '-'} | {remote.get('entryCount', '-')} | {result} |"
-        )
+            annotate("error", f"{entry.label}: {message}", entry.line)
+        for message in entry.warnings:
+            annotate("warning", f"{entry.label}: {message}", entry.line)
+        if entry.identifier in remote_ids or entry.errors:
+            remote = entry.remote or {}
+            status = "❌ " + "<br>".join(md_cell(e) for e in entry.errors) if entry.errors else "✅"
+            rows.append(
+                f"| {md_cell(entry.label)} | {'yes' if entry.identifier in remote_ids else 'skipped'} "
+                f"| {remote.get('conformanceLevel') or '-'} | {remote.get('entryCount', '-')} | {status} |"
+            )
+
+    summary = f"{len(result.entries)} entries linted, {len(remote_ids)} listed catalog(s) fetched and validated"
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary_path:
         with open(summary_path, "a", encoding="utf-8") as handle:
-            handle.write("\n".join(rows) + "\n\n")
-            handle.write(f"{len(listings)} listing(s) linted, {len(remote_slugs)} remote catalog(s) validated.\n")
-    status = "OK" if ok else "FAILED"
-    print(f"{len(listings)} listing(s) linted, {len(remote_slugs)} remote catalog(s) validated: {status}")
+            handle.write("## AI Catalog lint results\n\n")
+            for message in result.errors:
+                handle.write(f"- ❌ {message}\n")
+            if rows:
+                handle.write("\n| Catalog | Fetched | Conformance | Entries | Result |\n|---|---|---|---|---|\n")
+                handle.write("\n".join(rows) + "\n")
+            handle.write(f"\n{summary}: {'passed' if ok else 'failed'}.\n")
+    print(f"{summary}: {'OK' if ok else 'FAILED'}")
     return ok
 
 
@@ -381,22 +426,10 @@ def report(listings: list[Listing], remote_slugs: set[str]) -> bool:
 # --------------------------------------------------------------------------
 
 
-def aggregate_catalog(listings: list[Listing]) -> dict:
-    return {
-        "specVersion": "1.0",
-        "host": {
-            "displayName": "Awesome AI Catalogs",
-            "identifier": SITE_URL + "/",
-            "documentationUrl": REPO_URL,
-        },
-        "entries": [listing.entry() for listing in sorted(listings, key=lambda l: l.sort_key)],
-    }
-
-
-def render_cards(listings: list[Listing]) -> str:
+def render_cards(entries: list[Entry]) -> str:
     cards = []
-    for listing in sorted(listings, key=lambda l: l.sort_key):
-        data, remote = listing.data, listing.remote or {}
+    for entry in entries:
+        data, remote = entry.data, entry.remote or {}
         host = urllib.parse.urlsplit(data["url"]).hostname or ""
         tags = "".join(f"<li>{html.escape(t)}</li>" for t in data.get("tags", []))
         meta = []
@@ -422,11 +455,10 @@ def render_cards(listings: list[Listing]) -> str:
     return "\n".join(cards)
 
 
-def build_site(listings: list[Listing], out: Path) -> None:
+def build_site(text: str, entries: list[Entry], out: Path) -> None:
     if out.exists():
         shutil.rmtree(out)
     shutil.copytree(SITE_SRC, out, ignore=shutil.ignore_patterns("*.tmpl"))
-    text = json.dumps(aggregate_catalog(listings), indent=2, ensure_ascii=False) + "\n"
     (out / ".well-known").mkdir(parents=True, exist_ok=True)
     (out / ".well-known" / "ai-catalog.json").write_text(text, encoding="utf-8", newline="\n")
     (out / "ai-catalog.json").write_text(text, encoding="utf-8", newline="\n")
@@ -437,28 +469,28 @@ def build_site(listings: list[Listing], out: Path) -> None:
     page = (
         template.replace("{{SITE_URL}}", html.escape(SITE_URL))
         .replace("{{REPO_URL}}", html.escape(REPO_URL))
-        .replace("{{COUNT}}", str(len(listings)))
-        .replace("{{CARDS}}", render_cards(listings))
+        .replace("{{COUNT}}", str(len(entries)))
+        .replace("{{CARDS}}", render_cards(entries))
     )
     (out / "index.html").write_text(page, encoding="utf-8", newline="\n")
 
 
-def readme_block(listings: list[Listing]) -> str:
+def readme_block(entries: list[Entry]) -> str:
     lines = [README_START, ""]
-    for listing in sorted(listings, key=lambda l: l.sort_key):
-        data = listing.data
+    for entry in entries:
+        data = entry.data
         name = data["displayName"].replace("[", "\\[").replace("]", "\\]")
         lines.append(f"- [{name}]({data['url']}) - {data['description']}")
     lines += ["", README_END]
     return "\n".join(lines)
 
 
-def update_readme(listings: list[Listing], check_only: bool) -> bool:
+def update_readme(entries: list[Entry], check_only: bool) -> bool:
     current = README.read_text(encoding="utf-8")
     pattern = re.compile(re.escape(README_START) + r".*?" + re.escape(README_END), re.S)
     if not pattern.search(current):
         raise SystemExit(f"README.md is missing the {README_START} / {README_END} markers")
-    updated = pattern.sub(lambda _: readme_block(listings), current)
+    updated = pattern.sub(lambda _: readme_block(entries), current)
     if updated == current:
         return True
     if check_only:
@@ -472,14 +504,15 @@ def update_readme(listings: list[Listing], check_only: bool) -> bool:
 # --------------------------------------------------------------------------
 
 
-def cmd_check(args: argparse.Namespace) -> int:
-    listings = load_listings()
-    if not listings:
-        print("no listings found in catalogs/", file=sys.stderr)
-        return 1
-    lint_all(listings)
+def read_catalog_text() -> str:
+    return CATALOG.read_text(encoding="utf-8")
 
-    known = {l.slug for l in listings}
+
+def cmd_check(args: argparse.Namespace) -> int:
+    cli = find_cli()
+    result = lint_catalog(read_catalog_text(), cli)
+    known = {e.identifier for e in result.entries}
+
     if args.remote == "all":
         targets = known
     elif args.remote == "none":
@@ -487,57 +520,55 @@ def cmd_check(args: argparse.Namespace) -> int:
     elif args.remote == "changed":
         if not args.base:
             raise SystemExit("--remote changed requires --base <git-ref>")
-        targets = changed_listing_slugs(args.base) & known
+        targets = changed_identifiers(result.entries, args.base)
     else:
-        targets = {s.strip() for s in args.remote.split(",") if s.strip()}
+        targets = {t.strip() for t in args.remote.split(",") if t.strip()}
+        targets = {t if t in known else ID_BASE + t for t in targets}
         unknown = targets - known
         if unknown:
-            raise SystemExit(f"unknown listing(s): {', '.join(sorted(unknown))}")
+            raise SystemExit(f"unknown identifier(s): {', '.join(sorted(unknown))}")
 
-    if targets:
-        cli = require_cli()
-        for listing in listings:
-            if listing.slug in targets and not listing.errors:
-                print(f"validating {listing.data['url']} ...", flush=True)
-                validate_remote(listing, cli)
+    for entry in result.entries:
+        if entry.identifier in targets and not entry.errors:
+            print(f"validating {entry.data['url']} ...", flush=True)
+            validate_remote(entry, cli)
 
-    return 0 if report(listings, targets) else 1
+    return 0 if report(result, targets) else 1
+
+
+def cmd_format(args: argparse.Namespace) -> int:
+    document = load_catalog(read_catalog_text())
+    entries = document.get("entries")
+    if isinstance(entries, list) and all(isinstance(e, dict) for e in entries):
+        order = {key: i for i, key in enumerate(ENTRY_KEYS)}
+        entries.sort(key=lambda e: str(e.get("displayName", "")).casefold())
+        document["entries"] = [dict(sorted(e.items(), key=lambda kv: order.get(kv[0], len(order)))) for e in entries]
+    CATALOG.write_text(canonical(document), encoding="utf-8", newline="\n")
+    print(f"formatted {CATALOG_REL}")
+    return 0
 
 
 def cmd_build(args: argparse.Namespace) -> int:
-    listings = load_listings()
-    lint_all(listings)
-    if any(l.errors for l in listings):
-        report(listings, set())
+    cli = find_cli()
+    text = read_catalog_text()
+    result = lint_catalog(text, cli)
+    if not report(result, set()):
         return 1
-    cli = require_cli()
     if args.fetch:
         # Remote metadata is best effort here; the strict check runs in CI.
-        for listing in listings:
-            validate_remote(listing, cli)
-            for message in listing.errors:
-                print(f"::warning file=catalogs/{listing.slug}.json::{message}" if gh_actions() else f"WARNING {listing.slug}: {message}")
-            listing.errors.clear()
-            listing.warnings.clear()
-
-    out = Path(args.out).resolve()
-    build_site(listings, out)
-    result = run_validator(cli, out / ".well-known" / "ai-catalog.json")
-    if not result.get("valid"):
-        for item in result.get("errors", []):
-            print(f"ERROR aggregate catalog: {item.get('path')}: {item.get('message')}")
-        return 1
-    print(f"built {out} with {len(listings)} catalogs (aggregate conformance: {result.get('conformanceLevel')})")
+        for entry in result.entries:
+            validate_remote(entry, cli)
+            for message in entry.errors:
+                annotate("warning", f"{entry.label}: {message}", entry.line)
+    build_site(text, result.entries, Path(args.out).resolve())
+    print(f"built {Path(args.out).resolve()} with {len(result.entries)} catalogs")
     return 0
 
 
 def cmd_readme(args: argparse.Namespace) -> int:
-    listings = load_listings()
-    lint_all(listings)
-    if any(l.errors for l in listings):
-        report(listings, set())
-        return 1
-    if update_readme(listings, args.check):
+    document = load_catalog(read_catalog_text())
+    entries = [Entry(index=i, data=e) for i, e in enumerate(document.get("entries") or [])]
+    if update_readme(entries, args.check):
         print("README.md is up to date" if args.check else "README.md updated")
         return 0
     print("README.md is out of date; run: python scripts/catalogs.py readme")
@@ -550,14 +581,18 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    check = sub.add_parser("check", help="lint listings and validate remote catalogs")
+    check = sub.add_parser("check", help="lint ai-catalog.json and validate listed catalogs")
     check.add_argument(
         "--remote",
         default="all",
-        help="remote catalogs to fetch and validate: all (default), none, changed, or comma-separated slugs",
+        help="listed catalogs to fetch and validate: all (default), none, changed, "
+        "or comma-separated identifiers or slugs",
     )
-    check.add_argument("--base", help="git ref to diff against when using --remote changed")
+    check.add_argument("--base", help="git ref to compare against when using --remote changed")
     check.set_defaults(func=cmd_check)
+
+    fmt = sub.add_parser("format", help="sort entries and rewrite ai-catalog.json in canonical formatting")
+    fmt.set_defaults(func=cmd_format)
 
     build = sub.add_parser("build", help="build the GitHub Pages site")
     build.add_argument("--out", default="_site", help="output directory (default: _site)")

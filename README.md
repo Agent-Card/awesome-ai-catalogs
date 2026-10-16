@@ -2,7 +2,7 @@
 
 > A curated list of publicly available [AI Catalogs](https://agent-card.github.io/ai-catalog/), published as an AI Catalog itself.
 
-An AI Catalog (`application/ai-catalog+json`) is a JSON document that indexes AI artifacts such as MCP servers, A2A agents, agent skills, and other catalogs. This repository collects public catalogs into one browsable site and one machine-readable catalog of catalogs.
+An AI Catalog (`application/ai-catalog+json`) is a JSON document that indexes AI artifacts such as MCP servers, A2A agents, agent skills, and other catalogs. This repository's [`ai-catalog.json`](ai-catalog.json) is itself an AI Catalog whose entries are public catalogs. It is published unchanged, along with a browsable site.
 
 - **Website:** <https://agent-card.github.io/awesome-ai-catalogs/>
 - **AI Catalog:** <https://agent-card.github.io/awesome-ai-catalogs/.well-known/ai-catalog.json>
@@ -18,7 +18,7 @@ Every listed catalog has been validated with the [`ai-catalog` CLI](https://gith
 
 ## Using this catalog
 
-Every listed catalog is a nested catalog entry (`application/ai-catalog+json`) in the aggregate document, so any AI Catalog client can crawl the whole list. For example, with the `ai-catalog` CLI:
+Every listed catalog is a nested catalog entry (`application/ai-catalog+json`), so any AI Catalog client can crawl the whole list. For example, with the `ai-catalog` CLI:
 
 ```sh
 ai-catalog catalog add awesome https://agent-card.github.io/awesome-ai-catalogs/.well-known/ai-catalog.json
@@ -60,7 +60,7 @@ The site's HTML also advertises the catalog with `<link rel="ai-catalog">` for a
 
 ## Contributing
 
-Want your catalog listed? Add one small JSON file to [`catalogs/`](catalogs/) and open a pull request. CI lints your listing and validates your live catalog automatically. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Want your catalog listed? Add an entry to [`ai-catalog.json`](ai-catalog.json) and open a pull request. CI lints your entry and validates your live catalog automatically. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Related
 

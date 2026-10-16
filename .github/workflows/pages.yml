@@ -54,7 +54,7 @@ jobs:
         uses: actions/deploy-pages@v5
 
   readme:
-    # Keeps the README list in sync with catalogs/ so contributors only add one JSON file.
+    # Keeps the README list in sync with ai-catalog.json so contributors only edit one file.
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
