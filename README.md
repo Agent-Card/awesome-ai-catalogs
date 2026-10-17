@@ -60,7 +60,7 @@ The site's HTML also advertises the catalog with `<link rel="ai-catalog">` for a
 
 ## Contributing
 
-Want your catalog listed? Add an entry to [`ai-catalog.json`](ai-catalog.json) and open a pull request. CI lints your entry and validates your live catalog automatically. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Want your catalog listed? [Open an **Add a catalog** issue](https://github.com/Agent-Card/awesome-ai-catalogs/issues/new?template=add-catalog.yml) with its URL, and a bot validates it and opens the pull request for you. You can also add an entry to [`ai-catalog.json`](ai-catalog.json) and open a pull request yourself. CI lints your entry and validates your live catalog automatically. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Related
 

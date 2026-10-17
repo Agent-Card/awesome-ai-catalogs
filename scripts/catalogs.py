@@ -350,6 +350,9 @@ def validate_remote(entry: Entry, cli: str) -> None:
         result["types"] = sorted({e["type"] for e in entries if isinstance(e, dict) and isinstance(e.get("type"), str)})
         if not entries:
             entry.errors.append(f"{url} has no entries; only non-empty catalogs can be listed")
+    host = document.get("host") if isinstance(document, dict) else None
+    if isinstance(host, dict) and isinstance(host.get("displayName"), str):
+        result["hostName"] = host["displayName"]
 
 
 def changed_identifiers(entries: list[Entry], base: str) -> set[str]:
@@ -536,14 +539,18 @@ def cmd_check(args: argparse.Namespace) -> int:
     return 0 if report(result, targets) else 1
 
 
-def cmd_format(args: argparse.Namespace) -> int:
-    document = load_catalog(read_catalog_text())
+def format_catalog(document: dict) -> str:
+    """Sort entries by displayName, order entry members, and serialize canonically."""
     entries = document.get("entries")
     if isinstance(entries, list) and all(isinstance(e, dict) for e in entries):
         order = {key: i for i, key in enumerate(ENTRY_KEYS)}
         entries.sort(key=lambda e: str(e.get("displayName", "")).casefold())
         document["entries"] = [dict(sorted(e.items(), key=lambda kv: order.get(kv[0], len(order)))) for e in entries]
-    CATALOG.write_text(canonical(document), encoding="utf-8", newline="\n")
+    return canonical(document)
+
+
+def cmd_format(args: argparse.Namespace) -> int:
+    CATALOG.write_text(format_catalog(load_catalog(read_catalog_text())), encoding="utf-8", newline="\n")
     print(f"formatted {CATALOG_REL}")
     return 0
 

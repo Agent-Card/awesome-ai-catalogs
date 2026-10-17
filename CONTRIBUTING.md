@@ -16,6 +16,10 @@ Catalogs that stop meeting these requirements may be removed. A scheduled workfl
 
 ## Add your catalog
 
+The easiest way is to [open an **Add a catalog** issue](https://github.com/Agent-Card/awesome-ai-catalogs/issues/new?template=add-catalog.yml) with your catalog's URL and a one-line description. A workflow validates the catalog and either opens a pull request for you or comments with the errors to fix. Edit the issue to retry. The pull request is rebuilt from `main` whenever another catalog is merged, so it never has merge conflicts.
+
+### Or edit `ai-catalog.json` yourself
+
 1. Fork this repository.
 2. Add a nested catalog entry to `entries` in `ai-catalog.json`, in alphabetical order by `displayName`:
 
@@ -73,5 +77,7 @@ python scripts/catalogs.py build
 ## Maintainers
 
 - PRs that only change `ai-catalog.json` and pass **Lint AI Catalogs** are ready to review for fit and description quality.
+- Submission PRs (branches named `catalog-submission/issue-<n>`) are created by the **Catalog submissions** workflow, which has already validated the catalog. With only `GITHUB_TOKEN`, GitHub doesn't run other workflows on bot-created PRs. To also run **Lint AI Catalogs** on them, add a `CATALOG_SUBMISSION_TOKEN` secret (a GitHub App or fine-grained token with contents, pull requests, and issues write access).
+- To rerun a submission, use **Run workflow** on **Catalog submissions** with the issue number, or leave it empty to rebuild every open submission PR.
 - After merge, **Publish site** deploys GitHub Pages and commits the regenerated README list.
 - To bump the CLI version, update `version` and `sha256` defaults in `.github/actions/setup-ai-catalog/action.yml`.

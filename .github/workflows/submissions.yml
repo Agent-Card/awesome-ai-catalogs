@@ -1,0 +1,55 @@
+name: Catalog submissions
+
+on:
+  issues:
+    types: [opened, edited, reopened, closed]
+  push:
+    branches: [main]
+    paths: [ai-catalog.json]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Issue number to process (leave empty to rebuild all open submission PRs)
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+# Serialize all runs so submission branches are never rebuilt concurrently.
+concurrency:
+  group: catalog-submissions
+  cancel-in-progress: false
+
+jobs:
+  submission:
+    if: github.event_name != 'issues' || contains(github.event.issue.labels.*.name, 'catalog-submission')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # PRs pushed with GITHUB_TOKEN don't trigger other workflows. Set the optional
+      # CATALOG_SUBMISSION_TOKEN secret (a GitHub App or fine-grained token with contents,
+      # pull requests, and issues write) so Lint AI Catalogs also runs on bot PRs.
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.CATALOG_SUBMISSION_TOKEN || github.token }}
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - uses: ./.github/actions/setup-ai-catalog
+
+      - name: Process submissions
+        env:
+          GH_TOKEN: ${{ secrets.CATALOG_SUBMISSION_TOKEN || github.token }}
+          ISSUE: ${{ github.event.issue.number || inputs.issue }}
+        run: |
+          if [ -n "$ISSUE" ]; then
+            python scripts/submission.py process "$ISSUE"
+          else
+            python scripts/submission.py refresh
+          fi

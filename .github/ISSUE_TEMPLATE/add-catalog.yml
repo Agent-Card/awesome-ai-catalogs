@@ -1,0 +1,57 @@
+name: Add a catalog
+description: Submit a public AI Catalog. A bot validates it and opens a pull request for you.
+title: "Add catalog: "
+labels: ["catalog-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fill in the form and submit the issue. A workflow fetches your catalog, validates it with the [`ai-catalog` CLI](https://github.com/Agent-Card/ai-catalog-cli), and then either opens a pull request adding it to [`ai-catalog.json`](https://github.com/Agent-Card/awesome-ai-catalogs/blob/main/ai-catalog.json) or comments with the errors to fix.
+
+        To retry after fixing your catalog or this form, edit the issue. See the [listing requirements](https://github.com/Agent-Card/awesome-ai-catalogs/blob/main/CONTRIBUTING.md#listing-requirements).
+  - type: input
+    id: url
+    attributes:
+      label: Catalog URL
+      description: The `https://` URL of your AI Catalog document.
+      placeholder: https://example.com/.well-known/ai-catalog.json
+    validations:
+      required: true
+  - type: input
+    id: description
+    attributes:
+      label: Description
+      description: One line describing what the catalog offers (maximum 300 characters).
+      placeholder: MCP servers and agent skills for the Example developer platform.
+    validations:
+      required: true
+  - type: input
+    id: display-name
+    attributes:
+      label: Display name
+      description: Optional. Defaults to the catalog's `host.displayName`, or its domain name.
+    validations:
+      required: false
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Optional. Up to 8 comma-separated keywords, such as `mcp, skills, developer-tools`.
+    validations:
+      required: false
+  - type: input
+    id: identifier
+    attributes:
+      label: Identifier
+      description: >-
+        Optional, and only if you publish the catalog: a `urn:air:<your-domain>:catalog:<name>` identifier whose
+        domain matches the catalog URL. Otherwise one is assigned from the display name.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmation
+      options:
+        - label: The catalog is publicly reachable without authentication and isn't already listed.
+          required: true
