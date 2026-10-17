@@ -288,6 +288,17 @@
       ]
     },
     {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/tldraw-com",
+      "displayName": "tldraw.com",
+      "type": "application/ai-catalog+json",
+      "description": "MCP server for reading tldraw.com boards.",
+      "url": "https://www.tldraw.com/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "whiteboard"
+      ]
+    },
+    {
       "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/weaviate",
       "displayName": "Weaviate",
       "type": "application/ai-catalog+json",
