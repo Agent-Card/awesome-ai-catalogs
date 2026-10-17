@@ -8,7 +8,7 @@ entries are the listed catalogs (``application/ai-catalog+json``). This script:
                this list's own rules, and fetches and validates listed catalogs.
 * ``format`` - rewrites ``ai-catalog.json`` in canonical formatting.
 * ``build``  - produces the GitHub Pages site, publishing ``ai-catalog.json``
-               unchanged at ``/.well-known/ai-catalog.json``.
+               unchanged at ``/ai-catalog.json``.
 * ``readme`` - regenerates the catalog list in README.md.
 
 Only the Python standard library is used. The ``ai-catalog`` CLI
@@ -462,10 +462,7 @@ def build_site(text: str, entries: list[Entry], out: Path) -> None:
     if out.exists():
         shutil.rmtree(out)
     shutil.copytree(SITE_SRC, out, ignore=shutil.ignore_patterns("*.tmpl"))
-    (out / ".well-known").mkdir(parents=True, exist_ok=True)
-    (out / ".well-known" / "ai-catalog.json").write_text(text, encoding="utf-8", newline="\n")
     (out / "ai-catalog.json").write_text(text, encoding="utf-8", newline="\n")
-    # Ensure GitHub Pages never runs Jekyll, which would drop the dot-directory.
     (out / ".nojekyll").write_text("", encoding="utf-8")
 
     template = (SITE_SRC / "index.html.tmpl").read_text(encoding="utf-8")

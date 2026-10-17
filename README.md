@@ -5,7 +5,7 @@
 An AI Catalog (`application/ai-catalog+json`) is a JSON document that indexes AI artifacts such as MCP servers, A2A agents, agent skills, and other catalogs. This repository's [`ai-catalog.json`](ai-catalog.json) is itself an AI Catalog whose entries are public catalogs. It is published unchanged, along with a browsable site.
 
 - **Website:** <https://agent-card.github.io/awesome-ai-catalogs/>
-- **AI Catalog:** <https://agent-card.github.io/awesome-ai-catalogs/.well-known/ai-catalog.json>
+- **AI Catalog:** <https://agent-card.github.io/awesome-ai-catalogs/ai-catalog.json>
 
 Every listed catalog has been validated with the [`ai-catalog` CLI](https://github.com/Agent-Card/ai-catalog-cli) and must stay valid to remain listed.
 
@@ -21,7 +21,7 @@ Every listed catalog has been validated with the [`ai-catalog` CLI](https://gith
 Every listed catalog is a nested catalog entry (`application/ai-catalog+json`), so any AI Catalog client can crawl the whole list. For example, with the `ai-catalog` CLI:
 
 ```sh
-ai-catalog catalog add awesome https://agent-card.github.io/awesome-ai-catalogs/.well-known/ai-catalog.json
+ai-catalog catalog add awesome https://agent-card.github.io/awesome-ai-catalogs/ai-catalog.json
 ai-catalog search mcp
 ```
 
