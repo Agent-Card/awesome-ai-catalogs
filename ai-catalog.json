@@ -123,6 +123,19 @@
       ]
     },
     {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/elmo",
+      "displayName": "Elmo",
+      "type": "application/ai-catalog+json",
+      "description": "MCP server for querying AI brand visibility data and managing tracked prompts.",
+      "url": "https://www.elmohq.com/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "ai-visibility",
+        "brand-monitoring",
+        "citations"
+      ]
+    },
+    {
       "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/frontman",
       "displayName": "Frontman",
       "type": "application/ai-catalog+json",
