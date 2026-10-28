@@ -42,6 +42,7 @@ The site's HTML also advertises the catalog with `<link rel="ai-catalog">` for a
 - [DeepEval](https://deepeval.com/.well-known/ai-catalog.json) - LLM evaluation framework docs (llms.txt), the Confident AI API catalog, and the Confident AI MCP server.
 - [Elmo](https://www.elmohq.com/.well-known/ai-catalog.json) - MCP server for querying AI brand visibility data and managing tracked prompts.
 - [Frontman](https://frontman.sh/.well-known/ai-catalog.json) - Agent skills and a read-only OpenAPI for Frontman, a browser-aware frontend coding agent.
+- [Grabient palettes](https://grabient.com/.well-known/ai-catalog.json) - MCP server for searching, creating, and managing color palettes and CSS gradients.
 - [iammatthias.com](https://iammatthias.com/.well-known/ai-catalog.json) - Personal site exposing llms.txt, an MCP server, and a GraphQL endpoint for searching and reading its content.
 - [Kortix](https://www.kortix.com/.well-known/ai-catalog.json) - MCP server for Kortix, an open-source AI operating system for agents, skills, memory, and connectors.
 - [Lumis](https://lumis.sh/.well-known/ai-catalog.json) - Docs MCP server and an agent skill for the Lumis syntax highlighter.
