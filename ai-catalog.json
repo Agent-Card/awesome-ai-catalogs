@@ -149,6 +149,21 @@
       ]
     },
     {
+      "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/grabient-palettes",
+      "displayName": "Grabient palettes",
+      "type": "application/ai-catalog+json",
+      "description": "MCP server for searching, creating, and managing color palettes and CSS gradients.",
+      "url": "https://grabient.com/.well-known/ai-catalog.json",
+      "tags": [
+        "mcp",
+        "color",
+        "palette",
+        "gradient",
+        "css",
+        "design"
+      ]
+    },
+    {
       "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/iammatthias",
       "displayName": "iammatthias.com",
       "type": "application/ai-catalog+json",
