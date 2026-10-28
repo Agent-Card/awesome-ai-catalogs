@@ -40,6 +40,7 @@ The site's HTML also advertises the catalog with `<link rel="ai-catalog">` for a
 - [Datum](https://www.datum.net/.well-known/ai-catalog.json) - MCP server and OpenAPI description for Datum, connected infrastructure for AI companies.
 - [DBFlux](https://dbflux.dev/.well-known/ai-catalog.json) - Documentation, llms.txt, an agent skill, and a docs MCP server for DBFlux, a keyboard-first database client.
 - [DeepEval](https://deepeval.com/.well-known/ai-catalog.json) - LLM evaluation framework docs (llms.txt), the Confident AI API catalog, and the Confident AI MCP server.
+- [Elmo](https://www.elmohq.com/.well-known/ai-catalog.json) - MCP server for querying AI brand visibility data and managing tracked prompts.
 - [Frontman](https://frontman.sh/.well-known/ai-catalog.json) - Agent skills and a read-only OpenAPI for Frontman, a browser-aware frontend coding agent.
 - [iammatthias.com](https://iammatthias.com/.well-known/ai-catalog.json) - Personal site exposing llms.txt, an MCP server, and a GraphQL endpoint for searching and reading its content.
 - [Kortix](https://www.kortix.com/.well-known/ai-catalog.json) - MCP server for Kortix, an open-source AI operating system for agents, skills, memory, and connectors.
