@@ -32,6 +32,7 @@ The site's HTML also advertises the catalog with `<link rel="ai-catalog">` for a
 <!-- catalogs:start -->
 
 - [AgentAvow](https://agentavow.com/.well-known/ai-catalog.json) - Signed (did:web, ES256) catalog for the AgentAvow trust MCP server; a reference for Trusted-level conformance.
+- [AGNTCY Directory](https://ai-catalog.outshift.io/.well-known/ai-catalog.json) - Cisco AI Catalog powered by Agent Directory Service
 - [anchor-x402](https://api.anchor-x402.com/.well-known/ai-catalog.json) - x402-paid services for AI agents exposed as an A2A agent, an MCP server, and an OpenAPI description.
 - [AWS Skills](https://dawright22.github.io/aws_skills/.well-known/ai-catalog.json) - Community agent skills for AWS services such as API Gateway, Bedrock, CloudFormation, CloudWatch, and Cognito.
 - [Azure Git-Ape](https://azure.github.io/git-ape/.well-known/ai-catalog.json) - Agent skills for Azure deployments: cost estimation, preflight validation, drift detection, and integration testing.
