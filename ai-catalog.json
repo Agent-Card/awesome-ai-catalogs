@@ -19,6 +19,13 @@
       ]
     },
     {
+      "identifier": "urn:air:outshift.io:catalog:outshift",
+      "displayName": "AGNTCY Directory",
+      "type": "application/ai-catalog+json",
+      "description": "Cisco AI Catalog powered by Agent Directory Service",
+      "url": "https://ai-catalog.outshift.io/.well-known/ai-catalog.json"
+    },
+    {
       "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/anchor-x402",
       "displayName": "anchor-x402",
       "type": "application/ai-catalog+json",
