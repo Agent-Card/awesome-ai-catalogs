@@ -7,6 +7,23 @@
   },
   "entries": [
     {
+      "identifier": "urn:air:a2a-market.com:catalog:a2a-market",
+      "displayName": "A2A Market",
+      "type": "application/ai-catalog+json",
+      "description": "Signed (did:web, ES256) catalog for the A2A Market agent marketplace; implements the did-web-v1 Catalog Profile and references the marketplace discovery Agent Card.",
+      "url": "https://ai-catalog.a2a-market.com/.well-known/ai-catalog.json",
+      "tags": [
+        "a2a",
+        "marketplace",
+        "agent-discovery",
+        "signed"
+      ],
+      "publisher": {
+        "identifier": "did:web:ai-catalog.a2a-market.com",
+        "displayName": "A2A Market"
+      }
+    },
+    {
       "identifier": "https://agent-card.github.io/awesome-ai-catalogs/catalogs/agentavow",
       "displayName": "AgentAvow",
       "type": "application/ai-catalog+json",
